@@ -1,0 +1,71 @@
+Develop an OpenGL program to Spin 3D sierpinski gasket using OpenGL transformation
+#include <GL/glut.h>
+#include <cmath>
+// Define initial vertices of the tetrahedron (Sierpinski Gasket)
+GLfloat vertices[4][3] = {
+{0.0, 0.0, 1.0}, // Vertex 0
+{0.0, 0.942809, -0.333333}, // Vertex 1
+{-0.816497, -0.471405, -0.333333}, // Vertex 2
+{0.816497, -0.471405, -0.333333} // Vertex 3
+};
+// Initial rotation parameters
+GLfloat angle = 0.0;
+GLfloat axis[] = {0.1, 0.2, 0.3};
+void spin() {
+angle += 0.1;
+if (angle > 360.0)
+angle -= 360.0;
+glutPostRedisplay();
+}
+void display() {
+glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+glLoadIdentity();
+glRotatef(angle, axis[0], axis[1], axis[2]);
+glBegin(GL_TRIANGLES);
+glColor3f(1.0, 0.0, 0.0); // Red
+glVertex3fv(vertices[0]);
+glColor3f(0.0, 1.0, 0.0); // Green
+glVertex3fv(vertices[1]);
+glColor3f(0.0, 0.0, 1.0); // Blue
+glVertex3fv(vertices[2]);
+glColor3f(1.0, 0.0, 0.0); // Red
+glVertex3fv(vertices[0]);
+glColor3f(0.0, 0.0, 1.0); // Blue
+glVertex3fv(vertices[2]);
+glColor3f(0.0, 1.0, 0.0); // Green
+glVertex3fv(vertices[3]);
+glColor3f(1.0, 0.0, 0.0); // Red
+glVertex3fv(vertices[0]);
+glColor3f(0.0, 1.0, 0.0); // Green
+glVertex3fv(vertices[3]);
+glColor3f(0.0, 0.0, 1.0); // Blue
+glVertex3fv(vertices[1]);
+glColor3f(0.0, 1.0, 0.0); // Green
+glVertex3fv(vertices[1]);
+glColor3f(0.0, 0.0, 1.0); // Blue
+glVertex3fv(vertices[2]);
+glColor3f(1.0, 0.0, 0.0); // Red
+glVertex3fv(vertices[3]);
+glEnd();
+glFlush();
+glutSwapBuffers();
+}
+void init() {
+glClearColor(1.0, 1.0, 1.0, 0.0);
+glEnable(GL_DEPTH_TEST);
+glMatrixMode(GL_PROJECTION);
+glLoadIdentity();
+glOrtho(-2.0, 2.0, -2.0, 2.0, -10.0, 10.0);
+glMatrixMode(GL_MODELVIEW);
+}
+int main(int argc, char **argv) {
+glutInit(&argc, argv);
+glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+glutInitWindowSize(500, 500);
+glutCreateWindow("3D Sierpinski Gasket");
+glutDisplayFunc(display);
+glutIdleFunc(spin);
+init();
+glutMainLoop();
+return 0;
+}
