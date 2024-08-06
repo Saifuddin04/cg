@@ -1,0 +1,85 @@
+Develop OpenGL program to create and rotate a triangle about the origin and fixed point.
+#include <GL/glut.h>
+#include <cmath>
+// Rotation angle
+float angle = 0.0f;
+// Fixed point for rotation
+float fixedPointX = 0.5f;
+float fixedPointY = 0.5f;
+// Function to initialize OpenGL settings
+void initGL() {
+glClearColor(0.0, 0.0, 0.0, 1.0); // Set background color to black and opaque
+glClearDepth(1.0f); // Set background depth to farthest
+glEnable(GL_DEPTH_TEST); // Enable depth testing for z-culling
+glDepthFunc(GL_LEQUAL); // Set the type of depth-test
+glShadeModel(GL_SMOOTH); // Enable smooth shading
+glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); // Nice perspective corrections
+}
+// Function to display the triangle
+void display ( ) {
+glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the color buffer and the
+depth buffer
+glLoadIdentity(); // Reset the model-view matrix
+// Move the camera back so we can see the objects
+glTranslatef(0.0f, 0.0f, -5.0f);
+// Rotate around the origin
+glPushMatrix();
+glRotatef(angle, 0.0f, 0.0f, 1.0f); // Rotate about the Z axis
+glBegin(GL_TRIANGLES); // Start drawing the triangle
+glColor3f(1.0, 0.0, 0.0); // Red
+glVertex2f(-0.5, -0.5);
+glColor3f(0.0, 1.0, 0.0); // Green
+glVertex2f(0.5, -0.5);
+glColor3f(0.0, 0.0, 1.0); // Blue
+glVertex2f(0.0, 0.5);
+glEnd();
+glPopMatrix();
+// Rotate around a fixed point
+glPushMatrix();
+glTranslatef(fixedPointX, fixedPointY, 0.0f); // Move to fixed point
+glRotatef(angle, 0.0f, 0.0f, 1.0f); // Rotate about the Z axis
+glTranslatef(-fixedPointX, -fixedPointY, 0.0f); // Move back to original position
+glBegin(GL_TRIANGLES); // Start drawing the triangle
+glColor3f(1.0, 0.0, 0.0); // Red
+glVertex2f(fixedPointX - 0.5, fixedPointY - 0.5);
+glColor3f(0.0, 1.0, 0.0); // Green
+glVertex2f(fixedPointX + 0.5, fixedPointY - 0.5);
+glColor3f(0.0, 0.0, 1.0);
+glVertex2f(fixedPointX, fixedPointY + 0.5);
+glEnd();
+glPopMatrix();
+glutSwapBuffers(); // Swap the front and back frame buffers (double buffering)
+}
+// Function to handle window re-size event
+void reshape(int width, int height) {
+if (height == 0) height = 1; // Prevent division by zero
+float aspect = (float)width / (float)height;
+glViewport(0, 0, width, height); // Set the viewport to cover the new window
+glMatrixMode(GL_PROJECTION); // To operate on the Projection matrix
+glLoadIdentity(); // Reset
+gluPerspective(45.0f, aspect, 0.1f, 100.0f);// Set the perspective projection
+glMatrixMode(GL_MODELVIEW); // Switch back to the model-view matrix
+glLoadIdentity(); // Reset
+}
+// Timer function to update the rotation angle
+void timer (int value) {
+angle += 1.0f; // Update the rotation angle
+if (angle > 360.0f) angle -= 360.0f;
+glutPostRedisplay(); // Redraw the scene
+glutTimerFunc(16, timer, 0); // Call timer function again after 16 milliseconds
+}
+// Main function
+int main(int argc, char** argv) {
+glutInit(&argc, argv); // Initialize GLUT
+glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH); // Enable double buffered
+mode
+glutInitWindowSize(640, 480); // Set the window's initial width & height
+glutInitWindowPosition(50, 50); // Position the window's initial top-left corner
+glutCreateWindow("OpenGL Rotating Triangle"); // Create window with the given title
+glutDisplayFunc(display); // Register callback handler for window re-paint event
+glutReshapeFunc(reshape); // Register callback handler for window re-size event
+glutTimerFunc(0, timer, 0); // First timer call immediately
+initGL(); // Our own OpenGL initialization
+glutMainLoop(); // Enter the infinite event-processing loop
+return 0;
+}
