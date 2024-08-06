@@ -1,0 +1,113 @@
+Develop menu driven program to animate the polygon using 3D geometric
+transformation.
+#include <GL/glut.h>
+#include <cmath>
+// Global variables for animation
+GLfloat angle = 0.0;
+GLfloat scale = 1.0;
+GLfloat translateX = 0.0;
+GLfloat translateY = 0.0;
+GLfloat axis[] = {0.1, 0.2, 0.3};
+// Function to draw a polygon (in this case, a square)
+void drawPolygon() {
+glBegin(GL_POLYGON);
+glVertex3f(-0.5, -0.5, 0.0);
+glVertex3f(0.5, -0.5, 0.0);
+glVertex3f(0.5, 0.5, 0.0);
+glVertex3f(-0.5, 0.5, 0.0);
+glEnd();
+}
+// Function to handle menu selections
+void menu(int value) {
+switch(value) {
+case 1: // Rotate clockwise
+angle += 5.0;
+break;
+case 2: // Rotate counterclockwise
+angle -= 5.0;
+break;
+case 3: // Scale up
+scale += 0.1;
+break;
+case 4: // Scale down
+if (scale > 0.1)
+scale -= 0.1;
+break;
+case 5: // Translate right
+translateX += 0.1;
+break;
+case 6: // Translate left
+translateX -= 0.1;
+break;
+case 7: // Translate up
+translateY += 0.1;
+break;
+case 8: // Translate down
+translateY -= 0.1;
+break
+case 9: // Reset transformations
+angle = 0.0;
+scale = 1.0;
+translateX = 0.0;
+translateY = 0.0;
+break;
+case 10: // Exit
+exit(0);
+break;
+}
+glutPostRedisplay();
+}
+// Function to create the menu
+void createMenu() {
+int submenu_rotate = glutCreateMenu(menu);
+glutAddMenuEntry("Clockwise", 1);
+glutAddMenuEntry("Counter-clockwise", 2);
+int submenu_scale = glutCreateMenu(menu);
+glutAddMenuEntry("Scale Up", 3);
+glutAddMenuEntry("Scale Down", 4);
+int submenu_translate = glutCreateMenu(menu);
+glutAddMenuEntry("Right", 5);
+glutAddMenuEntry("Left", 6);
+glutAddMenuEntry("Up", 7);
+glutAddMenuEntry("Down", 8);
+glutCreateMenu(menu);
+glutAddSubMenu("Rotate", submenu_rotate);
+glutAddSubMenu("Scale", submenu_scale);
+glutAddSubMenu("Translate", submenu_translate);
+glutAddMenuEntry("Reset", 9);
+glutAddMenuEntry("Exit", 10);
+glutAttachMenu(GLUT_RIGHT_BUTTON); // Attach menu to right mouse button
+}
+// Display function
+void display() {
+glClear(GL_COLOR_BUFFER_BIT);
+glLoadIdentity();
+// Apply transformations
+glTranslatef(translateX, translateY, 0.0);
+glRotatef(angle, axis[0], axis[1], axis[2]);
+glScalef(scale, scale, scale);
+// Draw the polygon
+glColor3f(1.0, 0.0, 0.0); // Red
+drawPolygon();
+glFlush();
+}
+// Initialization function
+void init() {
+glClearColor(1.0, 1.0, 1.0, 0.0);
+glMatrixMode(GL_PROJECTION);
+glLoadIdentity();
+glOrtho(-2.0, 2.0, -2.0, 2.0, -1.0, 1.0);
+glMatrixMode(GL_MODELVIEW);
+}
+int main(int argc, char **argv) {
+glutInit(&argc, argv);
+glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+glutInitWindowSize(500, 500);
+glutInitWindowPosition(100, 100);
+glutCreateWindow("Menu-driven Polygon Animation");
+createMenu(); // Create the menu
+glutDisplayFunc(display);
+init();
+glutMainLoop();
+return 0;
+}
